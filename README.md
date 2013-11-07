@@ -14,3 +14,9 @@ License
 * jQuery plugin for Zabbix API is released under the MIT License.
 * Copyright &copy; 2011 <a href="http://kodai74.blogspot.com">Kodai Terashima</a>.
 * <a href="http://www.mozaby.com" target="_blank">Mozaby project</a>
+
+
+Modifications done by <a href="http://github.com/zenja">@zenja</a>
+-------
+
+* Change the invoke schema from normal AJAX to AJAX with JSONP. Also some modifications should be done on Zabbix's JSON-RPC file zabbix/api\_jsonrpc.php
