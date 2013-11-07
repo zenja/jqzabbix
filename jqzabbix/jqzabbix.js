@@ -1,18 +1,3 @@
-/*!
- *  jQuery plugin for Zabbix API
- *
- *  jQuery plugin for Zabbix API is a simple and easy-use plugin for jQuery JavaScript Library.
- *  It can be used for development of original Zabbix web application using Zabbix API.
- *
- *  Documentation on Mozaby site http://www.mozaby.com
- *  Issue tracking on GitHub http://github.com/kodai/jqzabbix
- *
- *  jQuery plugin for Zabbix API is Released under the MIT License.
- *  Copyright (c) 2011, Kodai Terashima http://kodai74.blogpot.com.
- *  Mozaby project http://www.mozaby.com
- */
-
-
 (function($){
 
 $.jqzabbix = function(options) {
@@ -73,14 +58,11 @@ function createAjaxOption(method, params, success, error, complete) {
     // create AJAX option
     var ajaxOption = {
         contentType: 'application/json-rpc',
-        dataType: 'json',
-        type: 'POST',
-        async: true,
-        cache: false,
-        processData: false,
-        timeout: options.timeout,
+        dataType: 'jsonp',
+        type: 'GET',
+        //timeout: options.timeout,
         url: options.url,
-        data: JSON.stringify(data),
+        data: "data=" + JSON.stringify(data),
         success: function(response, status) {
 
             // resuest error
@@ -212,17 +194,7 @@ this.userLogin = function(params, success, error, complete) {
     rpcid = 0;
 
     // method
-    switch (apiversion) {
-    case '1.0':
-    case '1.1':
-    case '1.2':
-    case '1.3':
-        var method = 'user.authenticate';
-        break;
-    default:
-        var method = 'user.login';
-        break;
-    }
+    var method = 'user.login';
 
     var successMethod = function(response, status) {
         authid = response.result;

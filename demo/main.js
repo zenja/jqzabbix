@@ -1,30 +1,16 @@
-/*!
- *  jQuery plugin for Zabbix API
- *
- *  jQuery plugin for Zabbix API is a simple and easy-use plugin for jQuery JavaScript Library.
- *  It can be used for development of original Zabbix web application using Zabbix API.
- *
- *  Documentation on Mozaby site http://www.mozaby.com
- *  Issue tracking on GitHub http://github.com/kodai/jqzabbix
- *
- *  jQuery plugin for Zabbix API is Released under the MIT License.
- *  Copyright (c) 2011, Kodai Terashima http://kodai74.blogpot.com.
- *  Mozaby project http://www.mozaby.com
- */
-
-
 // Zabbix server API url
-var url = 'http://localhost/zabbix/api_jsonrpc.php';
+var url = 'http://localhost:8880/zabbix/api_jsonrpc.php';
 
 var options = {};
 options.url = url;
 
 $(document).ready(function(){
-
+    
     server = new $.jqzabbix(options);
     server.getApiVersion(null, function(response){
         $('#result').html('<ul><li>Zabbix API Url: '+ url +'</li>' + '<li>API Version: ' + response.result + '</li></ul>');
-    });
+    },
+    function(response){alert("fail!");});
     
 })
 
