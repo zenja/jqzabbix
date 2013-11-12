@@ -5,7 +5,7 @@ $.jqzabbix = function(options) {
 // initialize options
 options = $.extend({
     // default settings
-    url: 'http://localhost/zabbix/api_jsonrpc.php',
+    url: 'http://localhost/zabbix/api_jsonrpc_jsonp.php',
     username: 'Admin',
     password: 'zabbix',
     basicauth: false,
