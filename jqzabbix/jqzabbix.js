@@ -207,5 +207,9 @@ this.userLogin = function(params, success, error, complete) {
     return this.sendAjaxRequest(method, params, successMethod, error, complete);
 }
 
+this.getAuthId = function() {
+    return authid;
+}
+
 } // end plugin
 })(window.jQuery || window.Zepto); // function($)
