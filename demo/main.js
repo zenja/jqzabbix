@@ -1,5 +1,5 @@
 // Zabbix server API url
-var url = 'http://localhost:8880/zabbix/api_jsonrpc.php';
+var url = 'http://localhost:8880/zabbix/api_jsonrpc_jsonp.php';
 
 var options = {};
 options.url = url;
