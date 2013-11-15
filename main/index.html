@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/underscore-min.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/Chart.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/jqzabbix.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/index.js"></script>
+</head>
+<body>
+<h1>Zabbix API Console (developing)</h1>
+<p id="user"></p>
+
+<form id="theform">
+  <label>Method:</label>
+  <input id="method" type="text" /><br />
+  <label>Params:</label><br />
+  <table border=1 id="param_table">
+    <thead>
+      <tr><td>Key</td><td>Value</td><td><a id="add_param" href="#">Add</a></td></tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+  <input id="invoke_button" type="submit" value="invoke" />
+</form>
+
+<p>Result:</p>
+<div id="result"></div>
+
+<p>Error:</p>
+<div id="error"></div>
+
+<hr />
+<h2>System Status:</h2>
+<table id="#table_system_status">
+</table>
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <p>Available memory (MB):</p>
+        <canvas id="chart_available_memory" width="400" height="400"></canvas>
+      </td>
+      <td>
+        <p>System uptime (hours):</p>
+        <canvas id="chart_system_uptime" width="400" height="400"></canvas>
+      </td>
+      <td>
+        <p>Free disk space on / (MB):</p>
+        <canvas id="chart_free_disk_space" width="400" height="400"></canvas>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p>CPU idle time (%)</p>
+        <canvas id="chart_cpu_idle_time" width="400" height="400"></canvas>
+      </td>
+      <td>
+        <p>CPU system time (%)</p>
+        <canvas id="chart_cpu_system_time" width="400" height="400"></canvas>
+      </td>
+      <td>
+        <p>CPU user time (%)</p>
+        <canvas id="chart_cpu_user_time" width="400" height="400"></canvas>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>
