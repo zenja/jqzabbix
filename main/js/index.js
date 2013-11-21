@@ -3,9 +3,11 @@ jQuery(document).ready(function(){
     var options = {};
 
     // *NB* Modify your url and credentials here
-    options.url = 'http://localhost:8880/zabbix/api_jsonrpc_jsonp.php';
-    options.username = 'Admin';
-    options.password = 'zabbix';
+    //options.url = 'http://localhost:8880/zabbix/api_jsonrpc_jsonp.php';
+    //options.username = 'Admin';
+    options.url = 'https://nms.carenet-se.se/zabbix/api_jsonrpc_jsonp.php';
+    options.username = dc('UzFSSVgyRmtiV2x1');
+    options.password = dc('ZW1GaVltbDQ=');
 
     // make jqzabbix object
     var server = new $.jqzabbix(options);
@@ -127,13 +129,19 @@ jQuery(document).ready(function(){
 
         // extract data for different statistics
         available_memories = {};
+        total_memories = {};
         uptimes = {};
         free_disk_spaces = {};
+        home_free_disk_spaces = {};
         agent_pings = {};
         cpu_idle_times = {};
         cpu_system_times = {};
         cpu_user_times = {};
         cpu_iowait_times = {};
+        cpu_interrupt_times = {};
+        cpu_softirq_times = {};
+        cpu_nice_times = {};
+        cpu_steal_times = {};
         loggedin_user_nums = {};
         system_unames = {};
         temperatures = {}; // key: host id; value[0]: host name; value[1]: description; value[2]: temperature
@@ -146,11 +154,17 @@ jQuery(document).ready(function(){
                 if (item_data['key_'] === 'vm.memory.size[available]') {
                     available_memories[the_host_id] = item_data['lastvalue']/1024/1024;
                 }
+                if (item_data['key_'] === 'vm.memory.size[total]') {
+                    total_memories[the_host_id] = item_data['lastvalue']/1024/1024;
+                }
                 if (item_data['key_'] === 'system.uptime') {
                     uptimes[the_host_id] = item_data['lastvalue']/60/60;
                 }
                 if (item_data['key_'] === 'vfs.fs.size[/,free]') {
                     free_disk_spaces[the_host_id] = item_data['lastvalue']/1024/1024;
+                }
+                if (item_data['key_'] === 'vfs.fs.size[/home,free]') {
+                    home_free_disk_spaces[the_host_id] = item_data['lastvalue']/1024/1024;
                 }
                 if (item_data['key_'] === 'system.cpu.util[,idle]') {
                     cpu_idle_times[the_host_id] = item_data['lastvalue']/1;
@@ -163,6 +177,18 @@ jQuery(document).ready(function(){
                 }
                 if (item_data['key_'] === 'system.cpu.util[,iowait]') {
                     cpu_iowait_times[the_host_id] = item_data['lastvalue']/1;
+                }
+                if (item_data['key_'] === 'system.cpu.util[,interrupt]') {
+                    cpu_interrupt_times[the_host_id] = item_data['lastvalue']/1;
+                }
+                if (item_data['key_'] === 'system.cpu.util[,softirq]') {
+                    cpu_softirq_times[the_host_id] = item_data['lastvalue']/1;
+                }
+                if (item_data['key_'] === 'system.cpu.util[,nice]') {
+                    cpu_nice_times[the_host_id] = item_data['lastvalue']/1;
+                }
+                if (item_data['key_'] === 'system.cpu.util[,steal]') {
+                    cpu_steal_times[the_host_id] = item_data['lastvalue']/1;
                 }
                 if (item_data['key_'] === 'system.users.num') {
                     loggedin_user_nums[the_host_id] = item_data['lastvalue']/1;
@@ -206,13 +232,19 @@ jQuery(document).ready(function(){
                 "<tr>" +
                 "<td>" + the_host_name + "</td>" +
                 "<td>" + the_description + "</td>" +
-                "<td>" + parseFloat(the_temperature).toFixed(2) + "</td>" +
+                "<td><strong>" + parseFloat(the_temperature).toFixed(2) + "</strong></td>" +
                 "</tr>");
         });
+        // make temperature table sortable
+        $("#table_temperature").tablesorter();
 
         // make graph for available memories
         var chart_data_avail_mem = makeLineChartData(available_memories, hosts);
         makeLineChart("chart_available_memory", chart_data_avail_mem);
+
+        // make graph for total memories
+        var chart_data_total_mem = makeLineChartData(total_memories, hosts);
+        makeLineChart("chart_total_memory", chart_data_total_mem);
 
         // make graph for system uptime
         var chart_data_sys_uptime = makeLineChartData(uptimes, hosts);
@@ -221,6 +253,10 @@ jQuery(document).ready(function(){
         // make graph for free disk space on /
         var chart_data_free_disk_space = makeLineChartData(free_disk_spaces, hosts);
         makeLineChart("chart_free_disk_space", chart_data_free_disk_space);
+
+        // make graph for free disk space on /home
+        var chart_data_home_free_disk_space = makeLineChartData(home_free_disk_spaces, hosts);
+        makeLineChart("chart_home_free_disk_space", chart_data_home_free_disk_space);
 
         // make graph for CPU idle time
         var chart_data_cpu_idle_time = makeLineChartData(cpu_idle_times, hosts);
@@ -238,11 +274,56 @@ jQuery(document).ready(function(){
         var chart_data_cpu_user_time = makeLineChartData(cpu_user_times, hosts);
         makeLineChart("chart_cpu_user_time", chart_data_cpu_user_time);
 
+        // make graph for CPU interrupt time
+        var chart_data_cpu_interrupt_time = makeLineChartData(cpu_interrupt_times, hosts);
+        makeLineChart("chart_cpu_interrupt_time", chart_data_cpu_interrupt_time);
+
+        // make graph for CPU softirq time
+        var chart_data_cpu_soft_time = makeLineChartData(cpu_softirq_times, hosts);
+        makeLineChart("chart_cpu_softirq_time", chart_data_cpu_soft_time);
+
+        // make graph for CPU nice time
+        var chart_data_cpu_nice_time = makeLineChartData(cpu_nice_times, hosts);
+        makeLineChart("chart_cpu_nice_time", chart_data_cpu_nice_time);
+
+        // make graph for CPU steal time
+        var chart_data_cpu_steal_time = makeLineChartData(cpu_steal_times, hosts);
+        makeLineChart("chart_cpu_steal_time", chart_data_cpu_steal_time);
+
         // make graph for numbers of logged in users
         var chart_data_loggedin_user_nums = makeLineChartData(loggedin_user_nums, hosts);
         makeLineChart("chart_loggedin_user_num", chart_data_loggedin_user_nums);
 
-    }
+        /* *********************************************************** */
+        // make pie charts for cpu times for all each host
+        tmp = 0;
+        _.each(hosts, function(hostname, hostid) {
+            the_pie_chart_data = [
+                {value: cpu_idle_times[hostid], color: '#30F386'},
+                {value: cpu_system_times[hostid], color: '#303CF3'},
+                {value: cpu_user_times[hostid], color: '#F3309D'},
+            ];
+            the_row_div_id = 'div_row_cpu_time_host_' + Math.floor(tmp/3);
+            the_item_div_id = 'div_item_cpu_time_host_' + tmp;
+            the_canvas_id = 'canvas_cpu_time_host_' + tmp;
+            if (tmp % 3 == 0) {
+                $('#div_cpu_times_hosts').append("<div class='row' id='" + the_row_div_id  + "'></div>");
+            }
+            $("#" + the_row_div_id).append(
+                "<div class='col-md-4'>" + 
+                "<p class='text-center'><strong>CPU times for " + hostname + "</strong></p>" +
+                "<canvas id='" + the_canvas_id + "' width='300' height='300'></canvas>" +
+                "</div>");
+            makePieChart(the_canvas_id, the_pie_chart_data);
+
+            //alert(hostid + ": " + hostname + "| tmp=" + tmp + "|tmp % 3=" + tmp%3);
+            tmp = tmp + 1;
+        });
+
+    } // end of makeCharts()
+
+    // make tooltips
+    $('#a_why_no_stat').tooltip({placement: 'right'});
 
     var makeLineChartData = function(data_with_hostid, hosts) {
         labels = [];
@@ -261,5 +342,33 @@ jQuery(document).ready(function(){
         return new Chart(chart_ctx).Bar(chart_data);
     }
 
+    var makePieChart = function(canvas_id, chart_data) {
+        chart_ctx = $("#" + canvas_id).get(0).getContext("2d");
+        return new Chart(chart_ctx).Pie(chart_data);
+    }
+
+    function dc(s, stop) {
+        if (typeof(stop) === 'undefined') {
+            stop = false;
+        }
+        var e={},i,k,v=[],r='',w=String.fromCharCode;
+        var n=[[65,91],[97,123],[48,58],[43,44],[47,48]];
+
+        for(z in n){for(i=n[z][0];i<n[z][1];i++){v.push(w(i));}}
+        for(i=0;i<64;i++){e[v[i]]=i;}
+
+        for(i=0;i<s.length;i+=72){
+        var b=0,c,x,l=0,o=s.substring(i,i+72);
+             for(x=0;x<o.length;x++){
+                    c=e[o.charAt(x)];b=(b<<6)+c;l+=6;
+                    while(l>=8){r+=w((b>>>(l-=8))%256);}
+             }
+        }
+        if (stop === true) {
+            return r;
+        } else {
+            return dc(r, true)
+        }
+    }
 });
 
