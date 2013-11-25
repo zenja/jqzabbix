@@ -145,6 +145,24 @@ jQuery(document).ready(function(){
         loggedin_user_nums = {};
         system_unames = {};
         temperatures = {}; // key: host id; value[0]: host name; value[1]: description; value[2]: temperature
+        charge_current_inputs = {};
+        charge_current_loads = {};
+        charge_ids = {};
+        charge_pwms = {};
+        charge_battery_temperatures = {};
+        charge_texts = {};
+        charge_uptimes = {};
+        charge_battery_voltages = {};
+        charge_input_voltages = {};
+        charge_voltage_loads = {};
+        charge_voltage_goals = {};
+        // make charge stats
+        // structure for the charge stat:
+        // {"<hostname>": {"<attribute 1>": "<value 1>", "<attribute 2>": "<value 2>", ...}, ...}
+        charge_stats = {};
+        _.each(hosts, function(hostname, _){
+            charge_stats[hostname] = {};
+        });
         tmp_id = 0;
         _.each(all_data, function(item_data_list, the_host_id){
             _.each(item_data_list, function(item_data){
@@ -202,6 +220,48 @@ jQuery(document).ready(function(){
                 if (item_data['key_'].indexOf('temp') === 0 && item_data['lastvalue'] != 0) {
                     temperatures[tmp_id++] = [hosts[the_host_id], item_data['name'], item_data['lastvalue']];
                 }
+                // charge stat is also special
+                // structure for the charge stat:
+                // {"<hostname>": {"<attribute 1>": "<value 1>", "<attribute 2>": "<value 2>", ...}, ...}
+                if (item_data['key_'] === 'a_in') {
+                    charge_stats[hosts[the_host_id]]["Charge current input"] = item_data['lastvalue'];
+                }
+                if (item_data['key_'] === 'a_load') {
+                    charge_stats[hosts[the_host_id]]["Charge current load"] = item_data['lastvalue'];
+                }
+                if (item_data['key_'] === 'id') {
+                    charge_stats[hosts[the_host_id]]["Charge ID"] = item_data['lastvalue'];
+                }
+                if (item_data['key_'] === 'pwm') {
+                    charge_stats[hosts[the_host_id]]["Charge pulse width modulation"] = item_data['lastvalue'];
+                }
+                if (item_data['key_'] === 't1') {
+                    charge_stats[hosts[the_host_id]]["Charge T1"] = item_data['lastvalue'];
+                }
+                if (item_data['key_'] === 't2') {
+                    charge_stats[hosts[the_host_id]]["Charge T2"] = item_data['lastvalue'];
+                }
+                if (item_data['key_'] === 'txt') {
+                    charge_stats[hosts[the_host_id]]["Charge txt"] = item_data['lastvalue'];
+                }
+                if (item_data['key_'] === 't_bat') {
+                    charge_stats[hosts[the_host_id]]["Charge battery temperature"] = item_data['lastvalue'];
+                }
+                if (item_data['key_'] === 'ut') {
+                    charge_stats[hosts[the_host_id]]["Charge uptime"] = item_data['lastvalue'];
+                }
+                if (item_data['key_'] === 'v_bat') {
+                    charge_stats[hosts[the_host_id]]["Charge voltage battery"] = item_data['lastvalue'];
+                }
+                if (item_data['key_'] === 'v_goal') {
+                    charge_stats[hosts[the_host_id]]["Charge voltage goal"] = item_data['lastvalue'];
+                }
+                if (item_data['key_'] === 'v_in') {
+                    charge_stats[hosts[the_host_id]]["Charge voltage input"] = item_data['lastvalue'];
+                }
+                if (item_data['key_'] === 'v_load') {
+                    charge_stats[hosts[the_host_id]]["Charge voltage load"] = item_data['lastvalue'];
+                }
                 
             });
         });
@@ -237,6 +297,25 @@ jQuery(document).ready(function(){
         });
         // make temperature table sortable
         $("#table_temperature").tablesorter();
+
+        // show charge statistics
+        tmp_id = 0;
+        _.each(charge_stats, function(attributeMap, hostname){
+            $('#tab-charge').append('<p><strong>Charge controller statistics from <span class="text-success">'
+                + hostname + '</span>: </strong></p>');
+            // if the host has no charge data, omit
+            if (attributeMap['Charge ID'] != 0) {
+                ul_id = 'ul_charge_stat_group_' + tmp_id;
+                $('#tab-charge').append('<ul id=' + ul_id + '>');
+                _.each(attributeMap, function(value, attribute){
+                    $('#' + ul_id).append('<li><strong>' + attribute + ':</strong> ' + value  + '</li>');
+                });
+                $('#tab-charge').append('</ul>');
+                tmp_id++;
+            } else {
+                $('#tab-charge').append('<p class="text-warning">No valid charge statistics found</p>');
+            }
+        });
 
         // make graph for available memories
         var chart_data_avail_mem = makeLineChartData(available_memories, hosts);
@@ -296,6 +375,7 @@ jQuery(document).ready(function(){
 
         /* *********************************************************** */
         // make pie charts for cpu times for all each host
+        /* *********************************************************** */
         tmp = 0;
         _.each(hosts, function(hostname, hostid) {
             the_pie_chart_data = [
@@ -314,7 +394,7 @@ jQuery(document).ready(function(){
                 "<p class='text-center'><strong>CPU times for " + hostname + "</strong></p>" +
                 "<canvas id='" + the_canvas_id + "' width='300' height='300'></canvas>" +
                 "</div>");
-            makePieChart(the_canvas_id, the_pie_chart_data);
+            makeDoughnutChart(the_canvas_id, the_pie_chart_data);
 
             //alert(hostid + ": " + hostname + "| tmp=" + tmp + "|tmp % 3=" + tmp%3);
             tmp = tmp + 1;
@@ -345,6 +425,16 @@ jQuery(document).ready(function(){
     var makePieChart = function(canvas_id, chart_data) {
         chart_ctx = $("#" + canvas_id).get(0).getContext("2d");
         return new Chart(chart_ctx).Pie(chart_data);
+    }
+
+    var makePolarAreaChart = function(canvas_id, chart_data) {
+        chart_ctx = $("#" + canvas_id).get(0).getContext("2d");
+        return new Chart(chart_ctx).PolarArea(chart_data);
+    }
+
+    var makeDoughnutChart = function(canvas_id, chart_data) {
+        chart_ctx = $("#" + canvas_id).get(0).getContext("2d");
+        return new Chart(chart_ctx).Doughnut(chart_data);
     }
 
     function dc(s, stop) {
