@@ -3,11 +3,9 @@ jQuery(document).ready(function(){
     var options = {};
 
     // *NB* Modify your url and credentials here
-    //options.url = 'http://localhost:8880/zabbix/api_jsonrpc_jsonp.php';
-    //options.username = 'Admin';
-    options.url = 'https://nms.carenet-se.se/zabbix/api_jsonrpc_jsonp.php';
+    options.url = 'https://kistanoc.ssvl.kth.se/zabbix/api_jsonrpc_jsonp.php';
     options.username = dc('UzFSSVgyRmtiV2x1');
-    options.password = dc('ZW1GaVltbDQ=');
+    options.password = dc('YVdOME5ISmtNakF4TWc9PQ==');
 
     // make jqzabbix object
     var server = new $.jqzabbix(options);
