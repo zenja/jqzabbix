@@ -4,8 +4,8 @@ jQuery(document).ready(function(){
 
     // *NB* Modify your url and credentials here
     options.url = 'https://kistanoc.ssvl.kth.se/zabbix/api_jsonrpc_jsonp.php';
-    options.username = dc('UzFSSVgyRmtiV2x1');
-    options.password = dc('YVdOME5ISmtNakF4TWc9PQ==');
+    options.username = 'monitor';
+    options.password = 'zabbix';
 
     // make jqzabbix object
     var server = new $.jqzabbix(options);
@@ -435,28 +435,5 @@ jQuery(document).ready(function(){
         return new Chart(chart_ctx).Doughnut(chart_data);
     }
 
-    function dc(s, stop) {
-        if (typeof(stop) === 'undefined') {
-            stop = false;
-        }
-        var e={},i,k,v=[],r='',w=String.fromCharCode;
-        var n=[[65,91],[97,123],[48,58],[43,44],[47,48]];
-
-        for(z in n){for(i=n[z][0];i<n[z][1];i++){v.push(w(i));}}
-        for(i=0;i<64;i++){e[v[i]]=i;}
-
-        for(i=0;i<s.length;i+=72){
-        var b=0,c,x,l=0,o=s.substring(i,i+72);
-             for(x=0;x<o.length;x++){
-                    c=e[o.charAt(x)];b=(b<<6)+c;l+=6;
-                    while(l>=8){r+=w((b>>>(l-=8))%256);}
-             }
-        }
-        if (stop === true) {
-            return r;
-        } else {
-            return dc(r, true)
-        }
-    }
 });
 
